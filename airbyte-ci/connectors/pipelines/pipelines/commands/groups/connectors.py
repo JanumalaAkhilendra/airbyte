@@ -16,12 +16,13 @@ from pipelines import main_logger
 from pipelines.bases import ConnectorWithModifiedFiles
 from pipelines.builds import run_connector_build_pipeline
 from pipelines.contexts import ConnectorContext, ContextState, PublishConnectorContext
-from pipelines.format import run_connectors_format_pipelines
 from pipelines.github import update_global_commit_status_check_for_tests
 from pipelines.pipelines.connectors import run_connectors_pipelines
 from pipelines.publish import reorder_contexts, run_connector_publish_pipeline
 from pipelines.tests import run_connector_test_pipeline
 from pipelines.utils import DaggerPipelineCommand, get_connector_modified_files, get_modified_connectors
+from rich.table import Table
+from rich.text import Text
 
 # HELPERS
 
@@ -505,45 +506,6 @@ def list(
         table.add_row(modified, connector_name, language, support_level, version, folder)
 
     console.print(table)
-    return True
-
-
-@connectors.command(name="format", cls=DaggerPipelineCommand, help="Autoformat connector code.")
-@click.pass_context
-def format_code(ctx: click.Context) -> bool:
-    connectors_contexts = [
-        ConnectorContext(
-            pipeline_name=f"Format connector {connector.technical_name}",
-            connector=connector,
-            is_local=ctx.obj["is_local"],
-            git_branch=ctx.obj["git_branch"],
-            git_revision=ctx.obj["git_revision"],
-            ci_report_bucket=ctx.obj["ci_report_bucket_name"],
-            report_output_prefix=ctx.obj["report_output_prefix"],
-            use_remote_secrets=ctx.obj["use_remote_secrets"],
-            gha_workflow_run_url=ctx.obj.get("gha_workflow_run_url"),
-            dagger_logs_url=ctx.obj.get("dagger_logs_url"),
-            pipeline_start_timestamp=ctx.obj.get("pipeline_start_timestamp"),
-            ci_context=ctx.obj.get("ci_context"),
-            ci_gcs_credentials=ctx.obj["ci_gcs_credentials"],
-            ci_git_user=ctx.obj["ci_git_user"],
-            ci_github_access_token=ctx.obj["ci_github_access_token"],
-            pull_request=ctx.obj.get("pull_request"),
-            should_save_report=False,
-        )
-        for connector in ctx.obj["selected_connectors_with_modified_files"]
-    ]
-
-    anyio.run(
-        run_connectors_format_pipelines,
-        connectors_contexts,
-        ctx.obj["ci_git_user"],
-        ctx.obj["ci_github_access_token"],
-        ctx.obj["git_branch"],
-        ctx.obj["is_local"],
-        ctx.obj["execute_timeout"],
-    )
-
     return True
 
 

@@ -81,7 +81,6 @@ At this point you can run `airbyte-ci` commands from the root of the repository.
 - [`connectors` command subgroup](#connectors-command-subgroup)
   * [Options](#options-1)
 - [`connectors list` command](#connectors-list-command)
-- [`connectors format` command](#connectors-format-command)
 - [`connectors test` command](#connectors-test-command)
   * [Examples](#examples-)
   * [What it runs](#what-it-runs-)
@@ -168,32 +167,6 @@ List connectors with a specific language:
 List connectors with multiple filters:
 
 `airbyte-ci connectors --language=low-code --support-level=certified list`
-
-### <a id="connectors-list-command"></a>`connectors format` command
-Run a code formatter on one or multiple connectors.
-
-For Python connectors we run the following tools, using the configuration defined in `pyproject.toml`:
-* `black` for code formatting
-* `isort` for import sorting
-* `licenseheaders` for adding license headers
-
-For Java connectors we run `./gradlew format`.
-
-In local CLI execution the formatted code is exported back the local repository. No commit or push is performed.
-In CI execution the formatted code is pushed to the remote branch. One format commit per connector.
-
-#### Examples
-Format a specific connector:
-
-`airbyte-ci connectors --name=source-pokeapi format`
-
-Format all Python connectors:
-
-`airbyte-ci connectors --language=python format`
-
-Format all connectors modified on the current branch:
-
-`airbyte-ci connectors --modified format`
 
 
 ### <a id="connectors-test-command"></a>`connectors test` command
@@ -381,6 +354,7 @@ This command runs the Python tests for a airbyte-ci poetry package.
 ## Changelog
 | Version | PR                                                         | Description                                                                                               |
 | ------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 2.0.0   | [#31424](https://github.com/airbytehq/airbyte/pull/31424)      | Remove `airbyte-ci connectors format` command.                                                            |
 | 1.8.0   | [#31369](https://github.com/airbytehq/airbyte/pull/31369)  | Remove metadata test commands                                                                             |
 | 1.7.2   | [#31343](https://github.com/airbytehq/airbyte/pull/31343)  | Bind Pytest integration tests to a dockerhost.                                                                  |
 | 1.7.1   | [#31332](https://github.com/airbytehq/airbyte/pull/31332)  | Disable Gradle step caching on source-postgres.                                                                  |
